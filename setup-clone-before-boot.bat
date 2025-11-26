@@ -1,14 +1,14 @@
 @echo off
-REM ╨Э╨Р╨б╨в╨а╨Ю╨Щ╨Ъ╨Р ╨Ъ╨Ы╨Ю╨Э╨Р ╨Я╨Х╨а╨Х╨Ф ╨Я╨Х╨а╨Т╨Ю╨Щ ╨Ч╨Р╨У╨а╨г╨Ч╨Ъ╨Ю╨Щ
-REM ╨Т╤Л╨┐╨╛╨╗╨╜╤П╤В╤М ╨╜╨░ ╤Е╨╛╤Б╤В╨╡ .90 ╨║╨╛╨│╨┤╨░ VHDX ╤Б╨╝╨╛╨╜╤В╨╕╤А╨╛╨▓╨░╨╜ ╨║╨░╨║ D:
-REM ╨Ъ╨а╨Ш╨в╨Ш╨з╨Х╨б╨Ъ╨Ш ╨Т╨Р╨Ц╨Э╨Ю: ╤Н╤В╨╕ ╨╜╨░╤Б╤В╤А╨╛╨╣╨║╨╕ ╨┐╤А╨╡╨┤╨╛╤В╨▓╤А╨░╤Й╨░╤О╤В ╤Г╤В╨╡╤З╨║╤Г IP
+REM НАСТРОЙКА КЛОНА ПЕРЕД ПЕРВОЙ ЗАГРУЗКОЙ
+REM Выполнять на хосте .90 когда VHDX смонтирован как D:
+REM КРИТИЧЕСКИ ВАЖНО: эти настройки предотвращают утечку IP
 
 echo ========================================
-echo ╨Э╨Р╨б╨в╨а╨Ю╨Щ╨Ъ╨Р ╨Ъ╨Ы╨Ю╨Э╨Р ╨Я╨Х╨а╨Х╨Ф ╨Я╨Х╨а╨Т╨Ю╨Щ ╨Ч╨Р╨У╨а╨г╨Ч╨Ъ╨Ю╨Щ
+echo НАСТРОЙКА КЛОНА ПЕРЕД ПЕРВОЙ ЗАГРУЗКОЙ
 echo ========================================
 echo.
-echo VHDX ╨┤╨╛╨╗╨╢╨╡╨╜ ╨▒╤Л╤В╤М ╤Б╨╝╨╛╨╜╤В╨╕╤А╨╛╨▓╨░╨╜ ╨║╨░╨║ D:
-echo ╨Х╤Б╨╗╨╕ ╨╜╨╡ ╤Б╨╝╨╛╨╜╤В╨╕╤А╨╛╨▓╨░╨╜, ╨▓╤Л╨┐╨╛╨╗╨╜╨╕╤В╨╡:
+echo VHDX должен быть смонтирован как D:
+echo Если не смонтирован, выполните:
 echo   diskpart
 echo   select vdisk file="C:\VMClone\clon192-4.vhdx"
 echo   attach vdisk
@@ -17,138 +17,138 @@ echo   exit
 echo.
 pause
 
-REM ╨Я╤А╨╛╨▓╨╡╤А╤П╨╡╨╝ ╨┤╨╛╤Б╤В╤Г╨┐╨╜╨╛╤Б╤В╤М D:\Windows
+REM Проверяем доступность D:\Windows
 if not exist D:\Windows (
-    echo [╨Ю╨и╨Ш╨С╨Ъ╨Р] D:\Windows ╨╜╨╡ ╨╜╨░╨╣╨┤╨╡╨╜!
-    echo ╨б╨╝╨╛╨╜╤В╨╕╤А╤Г╨╣╤В╨╡ VHDX ╤Б╨╜╨░╤З╨░╨╗╨░
+    echo [ОШИБКА] D:\Windows не найден!
+    echo Смонтируйте VHDX сначала
     pause
     exit /b 1
 )
 
-echo [OK] D:\Windows ╨╜╨░╨╣╨┤╨╡╨╜
+echo [OK] D:\Windows найден
 echo.
 
 REM ========================================
-REM ╨и╨Р╨У 1: ╨б╨╛╨╖╨┤╨░╨╡╨╝ ╨┤╨╕╤А╨╡╨║╤В╨╛╤А╨╕╤О ╨┤╨╗╤П startup ╤Б╨║╤А╨╕╨┐╤В╨╛╨▓
+REM ШАГ 1: Создаем директорию для startup скриптов
 REM ========================================
-echo ╨и╨Р╨У 1: ╨б╨╛╨╖╨┤╨░╨╜╨╕╨╡ ╨┤╨╕╤А╨╡╨║╤В╨╛╤А╨╕╨╣ ╨┤╨╗╤П ╤Б╨║╤А╨╕╨┐╤В╨╛╨▓...
+echo ШАГ 1: Создание директорий для скриптов...
 mkdir "D:\Windows\System32\GroupPolicy\Machine\Scripts\Startup" 2>nul
 mkdir "D:\BootManager" 2>nul
 
 if exist "D:\Windows\System32\GroupPolicy\Machine\Scripts\Startup" (
-    echo [OK] ╨Ф╨╕╤А╨╡╨║╤В╨╛╤А╨╕╤П Startup ╤Б╨╛╨╖╨┤╨░╨╜╨░
+    echo [OK] Директория Startup создана
 ) else (
-    echo [╨Ю╨и╨Ш╨С╨Ъ╨Р] ╨Э╨╡ ╤Г╨┤╨░╨╗╨╛╤Б╤М ╤Б╨╛╨╖╨┤╨░╤В╤М ╨┤╨╕╤А╨╡╨║╤В╨╛╤А╨╕╤О
+    echo [ОШИБКА] Не удалось создать директорию
     pause
     exit /b 1
 )
 
 REM ========================================
-REM ╨и╨Р╨У 2: ╨Ъ╨╛╨┐╨╕╤А╤Г╨╡╨╝ ╤Б╨║╤А╨╕╨┐╤В ╨▒╨╗╨╛╨║╨╕╤А╨╛╨▓╨║╨╕ ╤Д╨░╨╣╤А╨▓╨╛╨╗╨░
+REM ШАГ 2: Копируем скрипт блокировки файрвола
 REM ========================================
 echo.
-echo ╨и╨Р╨У 2: ╨Ъ╨╛╨┐╨╕╤А╨╛╨▓╨░╨╜╨╕╨╡ ╤Б╨║╤А╨╕╨┐╤В╨░ ╨▒╨╗╨╛╨║╨╕╤А╨╛╨▓╨║╨╕ ╤Д╨░╨╣╤А╨▓╨╛╨╗╨░...
-echo ╨Т╨Э╨Ш╨Ь╨Р╨Э╨Ш╨Х: ╨г╨▒╨╡╨┤╨╕╤В╨╡╤Б╤М ╤З╤В╨╛ ╤Д╨░╨╣╨╗ BLOCK_ALL_EXCEPT_WIREGUARD.bat ╨╜╨░╤Е╨╛╨┤╨╕╤В╤Б╤П ╨▓ ╤В╨╡╨║╤Г╤Й╨╡╨╣ ╨┤╨╕╤А╨╡╨║╤В╨╛╤А╨╕╨╕!
+echo ШАГ 2: Копирование скрипта блокировки файрвола...
+echo ВНИМАНИЕ: Убедитесь что файл BLOCK_ALL_EXCEPT_WIREGUARD.bat находится в текущей директории!
 echo.
 
 if exist "BLOCK_ALL_EXCEPT_WIREGUARD.bat" (
     copy "BLOCK_ALL_EXCEPT_WIREGUARD.bat" "D:\Windows\System32\GroupPolicy\Machine\Scripts\Startup\" /Y
-    echo [OK] ╨б╨║╤А╨╕╨┐╤В ╨▒╨╗╨╛╨║╨╕╤А╨╛╨▓╨║╨╕ ╤Б╨║╨╛╨┐╨╕╤А╨╛╨▓╨░╨╜
+    echo [OK] Скрипт блокировки скопирован
 ) else (
-    echo [╨Я╨а╨Х╨Ф╨г╨Я╨а╨Х╨Ц╨Ф╨Х╨Э╨Ш╨Х] BLOCK_ALL_EXCEPT_WIREGUARD.bat ╨╜╨╡ ╨╜╨░╨╣╨┤╨╡╨╜ ╨▓ ╤В╨╡╨║╤Г╤Й╨╡╨╣ ╨┤╨╕╤А╨╡╨║╤В╨╛╤А╨╕╨╕
-    echo ╨б╨║╨╛╨┐╨╕╤А╤Г╨╣╤В╨╡ ╨╡╨│╨╛ ╨▓╤А╤Г╤З╨╜╤Г╤О ╨▓ D:\Windows\System32\GroupPolicy\Machine\Scripts\Startup\
+    echo [ПРЕДУПРЕЖДЕНИЕ] BLOCK_ALL_EXCEPT_WIREGUARD.bat не найден в текущей директории
+    echo Скопируйте его вручную в D:\Windows\System32\GroupPolicy\Machine\Scripts\Startup\
     pause
 )
 
 REM ========================================
-REM ╨и╨Р╨У 3: ╨Ъ╨╛╨┐╨╕╤А╤Г╨╡╨╝ ╨░╨▓╨░╤А╨╕╨╣╨╜╤Л╨╣ ╤Б╨║╤А╨╕╨┐╤В ╨▓╨╛╨╖╨▓╤А╨░╤В╨░
+REM ШАГ 3: Копируем аварийный скрипт возврата
 REM ========================================
 echo.
-echo ╨и╨Р╨У 3: ╨Ъ╨╛╨┐╨╕╤А╨╛╨▓╨░╨╜╨╕╨╡ ╨░╨▓╨░╤А╨╕╨╣╨╜╨╛╨│╨╛ ╤Б╨║╤А╨╕╨┐╤В╨░ ╨▓╨╛╨╖╨▓╤А╨░╤В╨░...
+echo ШАГ 3: Копирование аварийного скрипта возврата...
 
 if exist "EMERGENCY_RETURN.bat" (
     copy "EMERGENCY_RETURN.bat" "D:\" /Y
-    echo [OK] EMERGENCY_RETURN.bat ╤Б╨║╨╛╨┐╨╕╤А╨╛╨▓╨░╨╜ ╨▓ D:\
+    echo [OK] EMERGENCY_RETURN.bat скопирован в D:\
 ) else (
-    echo [╨Я╨а╨Х╨Ф╨г╨Я╨а╨Х╨Ц╨Ф╨Х╨Э╨Ш╨Х] EMERGENCY_RETURN.bat ╨╜╨╡ ╨╜╨░╨╣╨┤╨╡╨╜
+    echo [ПРЕДУПРЕЖДЕНИЕ] EMERGENCY_RETURN.bat не найден
     pause
 )
 
 REM ========================================
-REM ╨и╨Р╨У 4: ╨Э╨░╤Б╤В╤А╨╛╨╣╨║╨░ ╨░╨▓╤В╨╛╨╖╨░╨┐╤Г╤Б╨║╨░ ╤Б╨║╤А╨╕╨┐╤В╨░ ╨▒╨╗╨╛╨║╨╕╤А╨╛╨▓╨║╨╕
+REM ШАГ 4: Настройка автозапуска скрипта блокировки
 REM ========================================
 echo.
-echo ╨и╨Р╨У 4: ╨Э╨░╤Б╤В╤А╨╛╨╣╨║╨░ ╨░╨▓╤В╨╛╨╖╨░╨┐╤Г╤Б╨║╨░ ╨▒╨╗╨╛╨║╨╕╤А╨╛╨▓╨║╨╕ ╤Д╨░╨╣╤А╨▓╨╛╨╗╨░...
-echo ╨б╨╛╨╖╨┤╨░╨╡╨╝ ╤Д╨░╨╣╨╗ scripts.ini ╨┤╨╗╤П Group Policy...
+echo ШАГ 4: Настройка автозапуска блокировки файрвола...
+echo Создаем файл scripts.ini для Group Policy...
 
 echo [Startup] > "D:\Windows\System32\GroupPolicy\Machine\Scripts\scripts.ini"
 echo 0CmdLine=BLOCK_ALL_EXCEPT_WIREGUARD.bat >> "D:\Windows\System32\GroupPolicy\Machine\Scripts\scripts.ini"
 echo 0Parameters= >> "D:\Windows\System32\GroupPolicy\Machine\Scripts\scripts.ini"
 
 if exist "D:\Windows\System32\GroupPolicy\Machine\Scripts\scripts.ini" (
-    echo [OK] scripts.ini ╤Б╨╛╨╖╨┤╨░╨╜
+    echo [OK] scripts.ini создан
 ) else (
-    echo [╨Ю╨и╨Ш╨С╨Ъ╨Р] ╨Э╨╡ ╤Г╨┤╨░╨╗╨╛╤Б╤М ╤Б╨╛╨╖╨┤╨░╤В╤М scripts.ini
+    echo [ОШИБКА] Не удалось создать scripts.ini
     pause
 )
 
 REM ========================================
-REM ╨и╨Р╨У 5: ╨Ъ╨╛╨┐╨╕╤А╤Г╨╡╨╝ ╤Г╤Б╤В╨░╨╜╨╛╨▓╤Й╨╕╨║ WireGuard (╨╡╤Б╨╗╨╕ ╨╡╤Б╤В╤М)
+REM ШАГ 5: Копируем установщик WireGuard (если есть)
 REM ========================================
 echo.
-echo ╨и╨Р╨У 5: ╨Ъ╨╛╨┐╨╕╤А╨╛╨▓╨░╨╜╨╕╨╡ ╤Г╤Б╤В╨░╨╜╨╛╨▓╤Й╨╕╨║╨░ WireGuard...
-echo ╨Т╨Э╨Ш╨Ь╨Р╨Э╨Ш╨Х: ╨б╨║╨░╤З╨░╨╣╤В╨╡ WireGuard installer ╨┤╨╗╤П Windows ╤Б https://www.wireguard.com/install/
-echo ╨Я╨╛╨╝╨╡╤Б╤В╨╕╤В╨╡ wireguard-installer.exe ╨▓ ╤В╨╡╨║╤Г╤Й╤Г╤О ╨┤╨╕╤А╨╡╨║╤В╨╛╤А╨╕╤О
+echo ШАГ 5: Копирование установщика WireGuard...
+echo ВНИМАНИЕ: Скачайте WireGuard installer для Windows с https://www.wireguard.com/install/
+echo Поместите wireguard-installer.exe в текущую директорию
 echo.
 
 if exist "wireguard-installer.exe" (
     mkdir "D:\Install" 2>nul
     copy "wireguard-installer.exe" "D:\Install\" /Y
-    echo [OK] WireGuard installer ╤Б╨║╨╛╨┐╨╕╤А╨╛╨▓╨░╨╜ ╨▓ D:\Install\
+    echo [OK] WireGuard installer скопирован в D:\Install\
 ) else (
-    echo [╨Я╨а╨Х╨Ф╨г╨Я╨а╨Х╨Ц╨Ф╨Х╨Э╨Ш╨Х] wireguard-installer.exe ╨╜╨╡ ╨╜╨░╨╣╨┤╨╡╨╜
-    echo ╨Т╨░╨╝ ╨╜╤Г╨╢╨╜╨╛ ╨▒╤Г╨┤╨╡╤В ╤Г╤Б╤В╨░╨╜╨╛╨▓╨╕╤В╤М WireGuard ╨┐╨╛╤Б╨╗╨╡ ╨┐╨╡╤А╨▓╨╛╨╣ ╨╖╨░╨│╤А╤Г╨╖╨║╨╕ ╨║╨╗╨╛╨╜╨░
+    echo [ПРЕДУПРЕЖДЕНИЕ] wireguard-installer.exe не найден
+    echo Вам нужно будет установить WireGuard после первой загрузки клона
     pause
 )
 
 REM ========================================
-REM ╨и╨Р╨У 6: ╨Ъ╨╛╨┐╨╕╤А╤Г╨╡╨╝ ╨║╨╛╨╜╤Д╨╕╨│╤Г╤А╨░╤Ж╨╕╤О WireGuard
+REM ШАГ 6: Копируем конфигурацию WireGuard
 REM ========================================
 echo.
-echo ╨и╨Р╨У 6: ╨Ъ╨╛╨┐╨╕╤А╨╛╨▓╨░╨╜╨╕╨╡ ╨║╨╛╨╜╤Д╨╕╨│╤Г╤А╨░╤Ж╨╕╨╕ WireGuard...
+echo ШАГ 6: Копирование конфигурации WireGuard...
 
 if exist "wg-clone.conf" (
     mkdir "D:\Install\WireGuard" 2>nul
     copy "wg-clone.conf" "D:\Install\WireGuard\" /Y
-    echo [OK] wg-clone.conf ╤Б╨║╨╛╨┐╨╕╤А╨╛╨▓╨░╨╜ ╨▓ D:\Install\WireGuard\
+    echo [OK] wg-clone.conf скопирован в D:\Install\WireGuard\
 ) else (
-    echo [╨Я╨а╨Х╨Ф╨г╨Я╨а╨Х╨Ц╨Ф╨Х╨Э╨Ш╨Х] wg-clone.conf ╨╜╨╡ ╨╜╨░╨╣╨┤╨╡╨╜
+    echo [ПРЕДУПРЕЖДЕНИЕ] wg-clone.conf не найден
     pause
 )
 
 REM ========================================
-REM ╨Ч╨Р╨Т╨Х╨а╨и╨Х╨Э╨Ш╨Х
+REM ЗАВЕРШЕНИЕ
 REM ========================================
 echo.
 echo ========================================
-echo ╨Э╨Р╨б╨в╨а╨Ю╨Щ╨Ъ╨Р ╨Ъ╨Ы╨Ю╨Э╨Р ╨Ч╨Р╨Т╨Х╨а╨и╨Х╨Э╨Р
+echo НАСТРОЙКА КЛОНА ЗАВЕРШЕНА
 echo ========================================
 echo.
-echo ╨з╤В╨╛ ╨▒╤Л╨╗╨╛ ╤Б╨┤╨╡╨╗╨░╨╜╨╛:
-echo [+] ╨б╨╛╨╖╨┤╨░╨╜╨░ ╨┤╨╕╤А╨╡╨║╤В╨╛╤А╨╕╤П ╨┤╨╗╤П startup ╤Б╨║╤А╨╕╨┐╤В╨╛╨▓
-echo [+] ╨б╨║╨╛╨┐╨╕╤А╨╛╨▓╨░╨╜ ╤Б╨║╤А╨╕╨┐╤В ╨▒╨╗╨╛╨║╨╕╤А╨╛╨▓╨║╨╕ ╤Д╨░╨╣╤А╨▓╨╛╨╗╨░
-echo [+] ╨Э╨░╤Б╤В╤А╨╛╨╡╨╜ ╨░╨▓╤В╨╛╨╖╨░╨┐╤Г╤Б╨║ ╨▒╨╗╨╛╨║╨╕╤А╨╛╨▓╨║╨╕ ╨┐╤А╨╕ ╨╖╨░╨│╤А╤Г╨╖╨║╨╡
-echo [+] ╨б╨║╨╛╨┐╨╕╤А╨╛╨▓╨░╨╜ ╨░╨▓╨░╤А╨╕╨╣╨╜╤Л╨╣ ╤Б╨║╤А╨╕╨┐╤В ╨▓╨╛╨╖╨▓╤А╨░╤В╨░
-echo [+] ╨Я╨╛╨┤╨│╨╛╤В╨╛╨▓╨╗╨╡╨╜ WireGuard (╨╡╤Б╨╗╨╕ ╤Д╨░╨╣╨╗╤Л ╨▒╤Л╨╗╨╕ ╨╜╨░╨╣╨┤╨╡╨╜╤Л)
+echo Что было сделано:
+echo [+] Создана директория для startup скриптов
+echo [+] Скопирован скрипт блокировки файрвола
+echo [+] Настроен автозапуск блокировки при загрузке
+echo [+] Скопирован аварийный скрипт возврата
+echo [+] Подготовлен WireGuard (если файлы были найдены)
 echo.
-echo ╨б╨Ы╨Х╨Ф╨г╨о╨й╨Ш╨Х ╨и╨Р╨У╨Ш:
-echo 1. ╨а╨░╨╖╨╝╨╛╨╜╤В╨╕╤А╨╛╨▓╨░╤В╤М VHDX: diskpart -^> detach vdisk
-echo 2. ╨Э╨░╤Б╤В╤А╨╛╨╕╤В╤М BCD (╨╕╤Б╨┐╨╛╨╗╤М╨╖╤Г╨╣╤В╨╡ configure-bcd.bat)
-echo 3. ╨Ч╨░╨│╤А╤Г╨╖╨╕╤В╤М ╨║╨╗╨╛╨╜ (╨╕╤Б╨┐╨╛╨╗╤М╨╖╤Г╨╣╤В╨╡ boot-to-clone.bat)
-echo 4. ╨Я╨╛╤Б╨╗╨╡ ╨╖╨░╨│╤А╤Г╨╖╨║╨╕ ╨║╨╗╨╛╨╜╨░:
-echo    - ╨г╤Б╤В╨░╨╜╨╛╨▓╨╕╤В╤М WireGuard ╨╕╨╖ D:\Install\wireguard-installer.exe
-echo    - ╨б╨║╨╛╨┐╨╕╤А╨╛╨▓╨░╤В╤М D:\Install\WireGuard\wg-clone.conf ╨▓ C:\Program Files\WireGuard\Data\Configurations\
-echo    - ╨Р╨║╤В╨╕╨▓╨╕╤А╨╛╨▓╨░╤В╤М ╤В╤Г╨╜╨╜╨╡╨╗╤М wg-clone
-echo    - ╨Я╤А╨╛╨▓╨╡╤А╨╕╤В╤М IP: curl ifconfig.me
+echo СЛЕДУЮЩИЕ ШАГИ:
+echo 1. Размонтировать VHDX: diskpart -^> detach vdisk
+echo 2. Настроить BCD (используйте configure-bcd.bat)
+echo 3. Загрузить клон (используйте boot-to-clone.bat)
+echo 4. После загрузки клона:
+echo    - Установить WireGuard из D:\Install\wireguard-installer.exe
+echo    - Скопировать D:\Install\WireGuard\wg-clone.conf в C:\Program Files\WireGuard\Data\Configurations\
+echo    - Активировать туннель wg-clone
+echo    - Проверить IP: curl ifconfig.me
 echo.
 pause

@@ -1,22 +1,22 @@
 @echo off
-REM Скрипт для проверки какая система загрузится следующей
-REM Разместить в C:\BootManager\check-next-boot.bat
+REM ��ਯ� ��� �஢�ન ����� ��⥬� ����㧨��� ᫥���饩
+REM ��������� � C:\BootManager\check-next-boot.bat
 
 echo ========================================
-echo Проверка конфигурации загрузки
+echo �஢�ઠ ���䨣��樨 ����㧪�
 echo ========================================
 echo.
 
-echo Система по умолчанию:
+echo ���⥬� �� 㬮�砭��:
 bcdedit /enum {default} | findstr "description device"
 
 echo.
-echo Последовательность загрузки (bootsequence):
+echo ��᫥����⥫쭮��� ����㧪� (bootsequence):
 bcdedit | findstr /C:"bootsequence"
 
 echo.
-echo Если bootsequence не установлена, загрузится система по умолчанию (основная)
-echo Если bootsequence установлена, загрузится указанная система (один раз)
+echo �᫨ bootsequence �� ��⠭������, ����㧨��� ��⥬� �� 㬮�砭�� (�᭮����)
+echo �᫨ bootsequence ��⠭������, ����㧨��� 㪠������ ��⥬� (���� ࠧ)
 echo.
 
 pause

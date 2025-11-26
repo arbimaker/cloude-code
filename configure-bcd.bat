@@ -1,34 +1,34 @@
 @echo off
-REM ╨б╨║╤А╨╕╨┐╤В ╨╜╨░╤Б╤В╤А╨╛╨╣╨║╨╕ BCD ╨┤╨╗╤П ╨▒╨╡╨╖╨╛╨┐╨░╤Б╨╜╨╛╨╣ dual boot ╨║╨╛╨╜╤Д╨╕╨│╤Г╤А╨░╤Ж╨╕╨╕
-REM ╨Т╤Л╨┐╨╛╨╗╨╜╤П╤В╤М ╨╜╨░ ╤Б╨╡╤А╨▓╨╡╤А╨╡ 185.244.175.90
+REM Скрипт настройки BCD для безопасной dual boot конфигурации
+REM Выполнять на сервере 185.244.175.90
 
 echo ========================================
-echo ╨Я╨╛╨╗╤Г╤З╨░╨╡╨╝ ╤В╨╡╨║╤Г╤Й╤Г╤О ╨║╨╛╨╜╤Д╨╕╨│╤Г╤А╨░╤Ж╨╕╤О BCD...
+echo Получаем текущую конфигурацию BCD...
 echo ========================================
 bcdedit /enum
 
 echo.
 echo ========================================
-echo ╨Т╨Э╨Ш╨Ь╨Р╨Э╨Ш╨Х! ╨б╨╡╨╣╤З╨░╤Б ╨╜╤Г╨╢╨╜╨╛ ╨╛╨┐╤А╨╡╨┤╨╡╨╗╨╕╤В╤М GUID ╨╖╨░╨┐╨╕╤Б╨╡╨╣:
-echo 1. ╨Ч╨░╨┐╨╕╤Б╤М ╨╛╤Б╨╜╨╛╨▓╨╜╨╛╨╣ ╤Б╨╕╤Б╤В╨╡╨╝╤Л (╤В╨╡╨║╤Г╤Й╨░╤П Windows)
-echo 2. ╨Ч╨░╨┐╨╕╤Б╤М ╨║╨╗╨╛╨╜╨░ (╤В╨╛╨╗╤М╨║╨╛ ╤З╤В╨╛ ╨┤╨╛╨▒╨░╨▓╨╗╨╡╨╜╨╜╨░╤П)
+echo ВНИМАНИЕ! Сейчас нужно определить GUID записей:
+echo 1. Запись основной системы (текущая Windows)
+echo 2. Запись клона (только что добавленная)
 echo ========================================
 echo.
-echo ╨Т╤Л╨┐╨╛╨╗╨╜╨╕╤В╨╡ ╤Б╨╗╨╡╨┤╤Г╤О╤Й╨╕╨╡ ╨║╨╛╨╝╨░╨╜╨┤╤Л ╨▓╤А╤Г╤З╨╜╤Г╤О, ╨┐╨╛╨┤╤Б╤В╨░╨▓╨╕╨▓ ╨┐╤А╨░╨▓╨╕╨╗╤М╨╜╤Л╨╡ GUID:
+echo Выполните следующие команды вручную, подставив правильные GUID:
 echo.
-echo REM ╨г╤Б╤В╨░╨╜╨╛╨▓╨╕╤В╤М ╨╛╤Б╨╜╨╛╨▓╨╜╤Г╤О ╤Б╨╕╤Б╤В╨╡╨╝╤Г ╨┐╨╛ ╤Г╨╝╨╛╨╗╤З╨░╨╜╨╕╤О:
-echo bcdedit /default {GUID_╨Ю╨б╨Э╨Ю╨Т╨Э╨Ю╨Щ_╨б╨Ш╨б╨в╨Х╨Ь╨л}
+echo REM Установить основную систему по умолчанию:
+echo bcdedit /default {GUID_ОСНОВНОЙ_СИСТЕМЫ}
 echo.
-echo REM ╨Э╨░╤Б╤В╤А╨╛╨╕╤В╤М ╨╖╨░╨┐╨╕╤Б╤М ╨║╨╗╨╛╨╜╨░:
-echo bcdedit /set {GUID_╨Ъ╨Ы╨Ю╨Э╨Р} device vhd=[C:]\VMClone\clon192-4.vhdx
-echo bcdedit /set {GUID_╨Ъ╨Ы╨Ю╨Э╨Р} osdevice vhd=[C:]\VMClone\clon192-4.vhdx
-echo bcdedit /set {GUID_╨Ъ╨Ы╨Ю╨Э╨Р} description "Clone Server (IP 194.31.72.192)"
-echo bcdedit /set {GUID_╨Ъ╨Ы╨Ю╨Э╨Р} detecthal yes
+echo REM Настроить запись клона:
+echo bcdedit /set {GUID_КЛОНА} device vhd=[C:]\VMClone\clon192-4.vhdx
+echo bcdedit /set {GUID_КЛОНА} osdevice vhd=[C:]\VMClone\clon192-4.vhdx
+echo bcdedit /set {GUID_КЛОНА} description "Clone Server (IP 194.31.72.192)"
+echo bcdedit /set {GUID_КЛОНА} detecthal yes
 echo.
-echo REM ╨Э╨░╤Б╤В╤А╨╛╨╕╤В╤М ╨▒╨╡╨╖╨╛╨┐╨░╤Б╨╜╤Г╤О ╨╖╨░╨│╤А╤Г╨╖╨║╤Г:
+echo REM Настроить безопасную загрузку:
 echo bcdedit /timeout 0
 echo bcdedit /set {bootmgr} displaybootmenu no
 echo bcdedit /set {default} bootstatuspolicy ignoreallfailures
-echo bcdedit /set {GUID_╨Ъ╨Ы╨Ю╨Э╨Р} bootstatuspolicy ignoreallfailures
+echo bcdedit /set {GUID_КЛОНА} bootstatuspolicy ignoreallfailures
 echo.
 pause

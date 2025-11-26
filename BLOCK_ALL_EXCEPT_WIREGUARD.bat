@@ -1,58 +1,58 @@
 @echo off
-REM ╨Ъ╨а╨Ш╨в╨Ш╨з╨Х╨б╨Ъ╨Ш ╨Т╨Р╨Ц╨Э╨л╨Щ ╨б╨Ъ╨а╨Ш╨Я╨в - ╨С╨Ы╨Ю╨Ъ╨Ш╨а╨Ю╨Т╨Ъ╨Р ╨Т╨б╨Х╨е ╨б╨Ю╨Х╨Ф╨Ш╨Э╨Х╨Э╨Ш╨Щ ╨Ъ╨а╨Ю╨Ь╨Х WIREGUARD
-REM ╨н╤В╨╛╤В ╤Б╨║╤А╨╕╨┐╤В ╨┤╨╛╨╗╨╢╨╡╨╜ ╨▒╤Л╤В╤М ╨▓╤Л╨┐╨╛╨╗╨╜╨╡╨╜ ╨Т ╨Ъ╨Ы╨Ю╨Э╨Х ╨┤╨╛ ╨┐╨╡╤А╨▓╨╛╨╣ ╨╖╨░╨│╤А╤Г╨╖╨║╨╕
-REM ╨а╨░╨╖╨╝╨╡╤Й╨░╨╡╤В╤Б╤П ╨▓ ╨║╨╗╨╛╨╜╨╡: D:\Windows\System32\GroupPolicy\Machine\Scripts\Startup\BLOCK_ALL_EXCEPT_WIREGUARD.bat
-REM (╨║╨╛╨│╨┤╨░ VHDX ╤Б╨╝╨╛╨╜╤В╨╕╤А╨╛╨▓╨░╨╜ ╨║╨░╨║ D:)
+REM КРИТИЧЕСКИ ВАЖНЫЙ СКРИПТ - БЛОКИРОВКА ВСЕХ СОЕДИНЕНИЙ КРОМЕ WIREGUARD
+REM Этот скрипт должен быть выполнен В КЛОНЕ до первой загрузки
+REM Размещается в клоне: D:\Windows\System32\GroupPolicy\Machine\Scripts\Startup\BLOCK_ALL_EXCEPT_WIREGUARD.bat
+REM (когда VHDX смонтирован как D:)
 
 echo ========================================
-echo ╨С╨Ы╨Ю╨Ъ╨Ш╨а╨Ю╨Т╨Ъ╨Р ╨Т╨б╨Х╨е ╨б╨Ю╨Х╨Ф╨Ш╨Э╨Х╨Э╨Ш╨Щ ╨Ъ╨а╨Ю╨Ь╨Х WIREGUARD
+echo БЛОКИРОВКА ВСЕХ СОЕДИНЕНИЙ КРОМЕ WIREGUARD
 echo ========================================
 
-REM ╨Т╨║╨╗╤О╤З╨░╨╡╨╝ ╤Д╨░╨╣╤А╨▓╨╛╨╗ ╨┤╨╗╤П ╨▓╤Б╨╡╤Е ╨┐╤А╨╛╤Д╨╕╨╗╨╡╨╣
+REM Включаем файрвол для всех профилей
 netsh advfirewall set allprofiles state on
 
-REM ╨г╤Б╤В╨░╨╜╨░╨▓╨╗╨╕╨▓╨░╨╡╨╝ ╨┐╨╛╨╗╨╕╤В╨╕╨║╤Г: ╨▒╨╗╨╛╨║╨╕╤А╨╛╨▓╨░╤В╤М ╨▓╤Е╨╛╨┤╤П╤Й╨╕╨╡ ╨╕ ╨╕╤Б╤Е╨╛╨┤╤П╤Й╨╕╨╡ ╨┐╨╛ ╤Г╨╝╨╛╨╗╤З╨░╨╜╨╕╤О
+REM Устанавливаем политику: блокировать входящие и исходящие по умолчанию
 netsh advfirewall set allprofiles firewallpolicy blockinbound,blockoutbound
 
-echo ╨д╨░╨╣╤А╨▓╨╛╨╗ ╨▓╨║╨╗╤О╤З╨╡╨╜, ╨▓╤Б╨╡ ╤Б╨╛╨╡╨┤╨╕╨╜╨╡╨╜╨╕╤П ╨╖╨░╨▒╨╗╨╛╨║╨╕╤А╨╛╨▓╨░╨╜╤Л ╨┐╨╛ ╤Г╨╝╨╛╨╗╤З╨░╨╜╨╕╤О
+echo Файрвол включен, все соединения заблокированы по умолчанию
 
-REM ╨а╨░╨╖╤А╨╡╤И╨░╨╡╨╝ ╨╕╤Б╤Е╨╛╨┤╤П╤Й╨╕╨╡ UDP ╤Б╨╛╨╡╨┤╨╕╨╜╨╡╨╜╨╕╤П ╨╜╨░ ╨┐╨╛╤А╤В 51820 (WireGuard ╨║ 194.31.72.192)
+REM Разрешаем исходящие UDP соединения на порт 51820 (WireGuard к 194.31.72.192)
 netsh advfirewall firewall delete rule name="Allow_WG_Out" >nul 2>&1
 netsh advfirewall firewall add rule name="Allow_WG_Out" dir=out action=allow protocol=UDP remoteip=194.31.72.192 remoteport=51820
 
-echo ╨а╨░╨╖╤А╨╡╤И╨╡╨╜╤Л ╨╕╤Б╤Е╨╛╨┤╤П╤Й╨╕╨╡ UDP ╨╜╨░ 194.31.72.192:51820 (WireGuard)
+echo Разрешены исходящие UDP на 194.31.72.192:51820 (WireGuard)
 
-REM ╨а╨░╨╖╤А╨╡╤И╨░╨╡╨╝ ╨▓╨╡╤Б╤М ╤В╤А╨░╤Д╨╕╨║ ╤З╨╡╤А╨╡╨╖ ╤В╤Г╨╜╨╜╨╡╨╗╤М WireGuard (10.0.0.0/24)
+REM Разрешаем весь трафик через туннель WireGuard (10.0.0.0/24)
 netsh advfirewall firewall delete rule name="Allow_Tunnel_Out" >nul 2>&1
 netsh advfirewall firewall add rule name="Allow_Tunnel_Out" dir=out action=allow remoteip=10.0.0.0/24
 
 netsh advfirewall firewall delete rule name="Allow_Tunnel_In" >nul 2>&1
 netsh advfirewall firewall add rule name="Allow_Tunnel_In" dir=in action=allow remoteip=10.0.0.0/24
 
-echo ╨а╨░╨╖╤А╨╡╤И╨╡╨╜ ╤В╤А╨░╤Д╨╕╨║ ╤З╨╡╤А╨╡╨╖ ╤В╤Г╨╜╨╜╨╡╨╗╤М 10.0.0.0/24
+echo Разрешен трафик через туннель 10.0.0.0/24
 
-REM ╨а╨░╨╖╤А╨╡╤И╨░╨╡╨╝ localhost (╨┤╨╗╤П ╨▓╨╜╤Г╤В╤А╨╡╨╜╨╜╨╕╤Е ╤Б╨╗╤Г╨╢╨▒)
+REM Разрешаем localhost (для внутренних служб)
 netsh advfirewall firewall delete rule name="Allow_Loopback" >nul 2>&1
 netsh advfirewall firewall add rule name="Allow_Loopback" dir=out action=allow remoteip=127.0.0.1
 
-echo ╨а╨░╨╖╤А╨╡╤И╨╡╨╜ localhost 127.0.0.1
+echo Разрешен localhost 127.0.0.1
 
 echo.
 echo ========================================
-echo [OK] ╨д╨Р╨Щ╨а╨Т╨Ю╨Ы ╨Э╨Р╨б╨в╨а╨Ю╨Х╨Э
+echo [OK] ФАЙРВОЛ НАСТРОЕН
 echo ========================================
-echo ╨а╨░╨╖╤А╨╡╤И╨╡╨╜╨╛:
-echo - WireGuard ╨║ 194.31.72.192:51820
-echo - ╨в╤А╨░╤Д╨╕╨║ ╤З╨╡╤А╨╡╨╖ ╤В╤Г╨╜╨╜╨╡╨╗╤М 10.0.0.0/24
+echo Разрешено:
+echo - WireGuard к 194.31.72.192:51820
+echo - Трафик через туннель 10.0.0.0/24
 echo - Localhost
 echo.
-echo ╨Т╤Б╨╡ ╨╛╤Б╤В╨░╨╗╤М╨╜╤Л╨╡ ╤Б╨╛╨╡╨┤╨╕╨╜╨╡╨╜╨╕╤П ╨Ч╨Р╨С╨Ы╨Ю╨Ъ╨Ш╨а╨Ю╨Т╨Р╨Э╨л
-echo ╨г╤В╨╡╤З╨║╨░ IP 185.244.175.90 ╨Э╨Х╨Т╨Ю╨Ч╨Ь╨Ю╨Ц╨Э╨Р
+echo Все остальные соединения ЗАБЛОКИРОВАНЫ
+echo Утечка IP 185.244.175.90 НЕВОЗМОЖНА
 echo ========================================
 
-REM ╨Я╨╛╨║╨░╨╖╤Л╨▓╨░╨╡╨╝ ╤В╨╡╨║╤Г╤Й╨╕╨╡ ╨┐╤А╨░╨▓╨╕╨╗╨░
+REM Показываем текущие правила
 echo.
-echo ╨Я╤А╨╛╨▓╨╡╤А╨║╨░ ╨┐╤А╨░╨▓╨╕╨╗ ╤Д╨░╨╣╤А╨▓╨╛╨╗╨░:
+echo Проверка правил файрвола:
 netsh advfirewall firewall show rule name=all | findstr "Allow_"
 
 exit /b 0
